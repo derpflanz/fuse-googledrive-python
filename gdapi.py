@@ -38,7 +38,11 @@ def get_drive_service():
 
     return build('drive', 'v3', credentials=creds)
 
+# http://googleapis.github.io/google-api-python-client/docs/dyn/drive_v3.files.html#get
+def get_metadata(service, id):
+    request = service.files().get(fileId=id, fields="id, name, size, kind, parents, spaces, driveId, mimeType, createdTime, viewedByMeTime, modifiedByMeTime").execute()
 
+    return request
 
 
 def get_file(service, id, destination = None):
@@ -62,10 +66,6 @@ def get_file(service, id, destination = None):
 
 # https://developers.google.com/resources/api-libraries/documentation/drive/v3/python/latest/index.html
 def get_files(service, pagesize = 100, parent = None):
-    # Call the Drive v3 API
-    # myDrive parent ID = 0ADZoyBWeSfDNUk9PVA
-    # https://developers.google.com/resources/api-libraries/documentation/drive/v3/python/latest/drive_v3.files.html#get
-
     if parent is not None:
         qry=f"'{parent}' in parents and trashed=false"
     else:
