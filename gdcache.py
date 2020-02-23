@@ -1,5 +1,6 @@
 import os.path, os
 import gdapi
+import datetime
 
 class Cache:
     def __init__(self, cachedir, gdservice):
@@ -18,12 +19,17 @@ class Cache:
         #     print(f"Online file is newer, delete cache file {fullpath}")
 
         if not os.path.exists(fullpath):
-            print(f"{fullpath} did not exist, download data")
-            content = gdapi.get_file(self.gdservice, gfile.id, destination=fullpath)
+            print(f"{fullpath} did not exist in cache, download data")
 
-            # with open(fullpath, "wb") as f:
-            #     f.write(content)
+            # get_file will download the file to 'fullpath'
+            gdapi.get_file(self.gdservice, gfile.id, destination=fullpath)
 
             print(f"Downloaded {gfile.id} to {fullpath}")
+        else:
+            # GD gives timestamps in UTC, so we need to calc back
+            cache_mtime = datetime.datetime.utcfromtimestamp(os.path.getmtime(fullpath))
+            gd_mtime = datetime.datetime.fromtimestamp(gfile.mtime)
+
+            print(f"{fullpath} exists in cache; cache mtime={cache_mtime}, gd mtime={gd_mtime}")
 
         return os.open(fullpath, flags)
