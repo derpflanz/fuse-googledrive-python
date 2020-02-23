@@ -1,0 +1,16 @@
+INTRODUCTION
+============
+fuse-googledrive-python is a Python FUSE implementation of the Google drive API. It was written because Google will not release
+a Linux driver for Google Drive (FUSE or otherwise). I found the OCAML driver by astrada (https://github.com/astrada/google-drive-ocamlfuse)
+but this one is too slow in real-life situations (I do not want to wait for the upload of my file each time I hit Ctrl-S). I do not
+know any OCAML, so fixing astrada's driver was no option. So I decided to rewrite it in Python, implementing what I need.
+
+HOW TO USE
+==========
+I try to make it as simple as possible:
+
+~$ python3 gdfuse.py <mountpoint> <cache-dir>
+
+HOW DOES IT WORK
+================
+<TBD>
