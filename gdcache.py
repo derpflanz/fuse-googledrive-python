@@ -11,8 +11,6 @@ class Cache:
         fullpath = os.path.join(self.cachedir, gfile.path[1:])
         fulldir = os.path.dirname(fullpath)
 
-#        print(f"Cache file of {gfile.path} is at {fullpath}, or path {fulldir}")
-
         # make sure our target dir exists
         os.makedirs(fulldir, exist_ok = True)
         # print(f"{gfile.mtime} {os.path.getmtime(fullpath)}")

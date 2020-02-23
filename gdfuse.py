@@ -23,7 +23,6 @@ class GoogleDriveFuse(Operations):
         self.cache = gdcache.Cache(cachedir, self.gd_service)
 
     def readdir(self, path, fh):
-#        print(f"Reading dir {path}")
         dirents = ['.', '..']
 
         if path == "/":
@@ -45,25 +44,16 @@ class GoogleDriveFuse(Operations):
     # this decides access, for now, we allow everything
     # raise EPERM when it fails
     def access(self, path, mode):
-#        pass
         print(f"Accessing file {path}, mode {mode}")
 
-    # def getxattr(self, path, name, fh=None):
-    #     print(f"getxattr {path} {name}")
-    #     return os.getxattr(".", name)
-
     def getattr(self, path, fh=None):
-#        print(f"Getting attributes for {path}")
-
         # When the root is asked, just return the mountpoint's stats
         if path == '/':
             r = self.mountpoint_stat
         else:
             if path not in self.file_list:
-#                print(f"Error, {path} not found in cache while trying to getattr")
                 raise FuseOSError(errno.ENOENT)
             gfile = self.file_list[path]
-#            print(f"{path} is of type {gfile.mimeType}, parent = {gfile.parents}")
 
             r = {
                 'st_atime': gfile.atime,
@@ -79,7 +69,6 @@ class GoogleDriveFuse(Operations):
         return r
 
     def statfs(self, path):
-#       print(f"Statfs {path}")
         # we just make up some stuff, until we run into an issue
         return {
             'f_bsize': 4096,    # system block size
@@ -140,20 +129,8 @@ class GoogleDriveFuse(Operations):
     # File methods
     # ============
     def open(self, path, flags):
-        # TODO on open, we download the file from Google
-        # then, we open it and return the FD
         gfile = self.file_list[path]
         return self.cache.open(gfile, flags)
-
-        # outfn = os.path.join(self.cachedir, path[1:])
-
-        # print(f"Open {path}, writing out to {outfn} {file_info}")
-        # content = gdapi.get_file(self.gd_service, file_info['id'])
-
-        # with open(outfn, "wb") as f:
-        #     f.write(content)
-
-        # return os.open(outfn, flags)
 
     def create(self, path, mode, fi=None):
         raise FuseOSError(errno.ENOSYS)
