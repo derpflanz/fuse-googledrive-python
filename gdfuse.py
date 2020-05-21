@@ -56,7 +56,7 @@ class GoogleDriveFuse(Operations):
 
             fullpath = os.path.join(self.cachedir, path[1:])
             if os.path.exists(fullpath):
-                print(f"{fullpath} exists in cache, getting realtime stats")
+                # file was in cache, fetch actual stat
                 stat = os.stat(fullpath)
                 r = {
                     'st_atime': stat.st_atime,
