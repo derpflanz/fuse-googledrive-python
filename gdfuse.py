@@ -53,18 +53,35 @@ class GoogleDriveFuse(Operations):
         else:
             if path not in self.file_list:
                 raise FuseOSError(errno.ENOENT)
-            gfile = self.file_list[path]
 
-            r = {
-                'st_atime': gfile.atime,
-                'st_ctime': gfile.ctime,
-                'st_gid': self.gid,
-                'st_uid': self.uid,
-                'st_mode': gfile.mode,
-                'st_mtime': gfile.mtime,
-                'st_nlink': 1,
-                'st_size': gfile.size
-            }
+            fullpath = os.path.join(self.cachedir, path[1:])
+            if os.path.exists(fullpath):
+                print(f"{fullpath} exists in cache, getting realtime stats")
+                stat = os.stat(fullpath)
+                r = {
+                    'st_atime': stat.st_atime,
+                    'st_ctime': stat.st_ctime,
+                    'st_gid': self.gid,
+                    'st_uid': self.uid,
+                    'st_mode': stat.st_mode,
+                    'st_mtime': stat.st_mtime,
+                    'st_nlink': 1,
+                    'st_size': stat.st_size
+                }
+            else:
+                # fetch stats from our file_list 
+                gfile = self.file_list[path]
+
+                r = {
+                    'st_atime': gfile.atime,
+                    'st_ctime': gfile.ctime,
+                    'st_gid': self.gid,
+                    'st_uid': self.uid,
+                    'st_mode': gfile.mode,
+                    'st_mtime': gfile.mtime,
+                    'st_nlink': 1,
+                    'st_size': gfile.size
+                }
 
         return r
 
@@ -138,13 +155,14 @@ class GoogleDriveFuse(Operations):
     def read(self, path, length, offset, fh):
         # because our actual data reading and writing is done on a temp
         # file, we can just use the file handle
-        print(f"Reading {length} bytes from offset {offset} of {path}")
+        print(f"Reading {length} bytes from offset {offset} of {path}; fh={fh}")
         os.lseek(fh, offset, os.SEEK_SET)
         return os.read(fh, length)
 
     def write(self, path, buf, offset, fh):
         # because our actual data reading and writing is done on a temp
         # file, we can just use the file handle
+        print(f"Writing {len(buf)} bytes to offset {offset} of {path}; fh={fh}")
         os.lseek(fh, offset, os.SEEK_SET)
         return os.write(fh, buf)
 

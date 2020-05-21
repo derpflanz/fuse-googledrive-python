@@ -37,4 +37,6 @@ class Cache:
             else:
                 print(f"{fullpath} exists in cache; cache mtime={cache_mtime}, gd mtime={gd_mtime}")
 
-        return os.open(fullpath, flags)
+        fd = os.open(fullpath, flags)
+        print(f"{fullpath} got fd {fd}")
+        return fd
